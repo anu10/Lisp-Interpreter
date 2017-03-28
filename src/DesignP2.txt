@@ -1,0 +1,39 @@
+I am taking input using standard input stream. There three files
+ LispScanner - which reads from input stream and convert into tokens.
+ LispParser - It takes token returned by LispScanner and generates a tree.
+ LispInterpreter - It takes the parsed lisp-expression from parser and evaluate it.
+ 
+Token has a value and a type.
+Lisp Scanner has tokens of the following type-
+
+- NUMERIC_ATOM = "NumericAtom"
+- LITERAL_ATOM = "LiteralAtom" 
+- OPEN_PARENTHESIS = "OpenParenthesis" 
+- CLOSING_PARENTHESIS = "ClosingParenthesis" 
+- EOF = "EOF" (End of file)
+- DOT = "DOT" (dot)
+- EOS = "EOS" (end of s-expression)
+
+ LispScanner - reads input from input stream, it reads line by line. It has the following functions: 
+ - init - which initializes the LispScanner, it calls MoveToNext function
+ - getCurrent - it returns the current value of the token.
+ - MoveToNext - It saves the value of next token to the current token
+ - getNextToken - It scans lines by lines of input stream. Generates atomic/non-atomic tokens. 
+ 
+ LispParser - It takes token returned by LispScanner and generates a tree and print the tree. It has the following functions:
+ - init - it initializes the LispScanner and calls LispScanner's init function.
+ - parseExpr - It takes token by the LispScanner , generates the tree on go. It also checks for errors in the s-expression and throws the expression.
+ 
+ LispInterpreter - It takes the parsed lisp-expression from parser and evaluate it. It has aList and dList as member variables. It has the following functions:
+ - printExpr - It prints the tree by performing tree traversal.
+ - startInterpreting - It calls parseExpr of LispParser, calls eval function with parsed lisp-expression, aList and dList as arguments. 
+ 					   It then calls printExpr to print the output.
+ - eval - evaluates a Lisp-expression given current parameter bindings (a-list) and function definitions (d-list).
+ - apply - applies a function to given set of argument values - gets the function definition from d-list, 
+           binds the formal pars to corresponding argument values, then calls eval to evaluate the body of the function.
+ - evList - evaluates the list of s-expressions
+ 
+ There are other helper fucntions in ListInterpreter which defines the primitives functions.
+   
+ 
+ 
