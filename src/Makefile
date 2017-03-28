@@ -6,6 +6,7 @@ JC = javac
 	$(JC) $(JFLAGS) $*.java
 
 CLASSES = \
+	LispInterpreter.java \
 	LispScanner.java \
 	LispParser.java
 
