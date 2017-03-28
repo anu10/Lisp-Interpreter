@@ -22,55 +22,22 @@ class Node {
 public class LispParser {
 	
 	static LispScanner scanner;
+	static boolean dd;
 	
-	public static void main(String[] args) throws IOException {
-		//scanner = new LispScanner();
-		while(true){
-			try {
-				scanner = new LispScanner();
-				scanner.init();
-				startParsing();
-			} catch (Exception e) {
-				System.out.println(e.getMessage().toString());
-			}
-		}
+	public void init() throws Exception {
+		scanner = new LispScanner();
+		scanner.init();
 	}
 	
-	//Start parsing the input
-	private static void startParsing() throws Exception{
-		Node root = parseExpr();
-		System.out.print("> ");
-		printExpr(root);
-		
-	}
-	
-	//Pretty printing the parse tree for top-level expression
-	private static void printExpr(Node root) throws Exception {
-		
-		if(root!=null) {
-			if(root.isInner) {
-				System.out.print("(");
-				printExpr(root.left);
-				System.out.print(".");
-				printExpr(root.right);
-				System.out.print(")");
-			}
-			else
-				System.out.print(root.val);
-		}
-	}
-
-	private static Node parseExpr() throws Exception {
+	public static Node parseExpr(boolean firstcall) throws Exception {
 		
 		Node root = null;
-		
-		
 		
 		//Create a leaf node corresponding to the atom and return it
 		if(scanner.getCurrent().type==LispScanner.LITERAL_ATOM || 
 				scanner.getCurrent().type==LispScanner.NUMERIC_ATOM) {
 			root = new Node(false,scanner.getCurrent().value);
-			scanner.MoveToNext();
+			dd = scanner.MoveToNext();
 		}
 		
 		//Parse the list of expressions and construct the subtree corresponding to that
@@ -84,34 +51,34 @@ public class LispParser {
 					System.exit(0);
 				}
 				else if(scanner.getCurrent().type == LispScanner.EOS){
-					scanner.MoveToNext();
-					throw new Exception("error: unexpected dollar");
+					dd=scanner.MoveToNext();
+					throw new Exception("> **error: unexpected dollar**");
 				}else{
 					if(scanner.getCurrent().type == LispScanner.DOT){
-						scanner.MoveToNext();
-						Node subtree = parseExpr();
+						dd=scanner.MoveToNext();
+						Node subtree = parseExpr(false);
 						if(scanner.getCurrent().type == LispScanner.DOT){
-							throw new Exception("error: unexpected dot");
+							throw new Exception("> **error: unexpected dot**");
 						}else
 							cur.right = subtree;
 					}else{
 						if(cur!=null){
 							cur.right = new Node(true, "");
 							cur = cur.right;
-							Node subtree = parseExpr();
+							Node subtree = parseExpr(false);
 							cur.left = subtree;
 						}
 						else {
 							root = new Node(true, "");
 							cur = root;
-							cur.left = parseExpr();
+							cur.left = parseExpr(false);
 						}
 					}
 				}
 				
 			}
 			
-			scanner.MoveToNext();
+			dd=scanner.MoveToNext();
 		}
 		
 		//If token is neither an atom nor an Open parenthesis, it is an error
@@ -120,15 +87,18 @@ public class LispParser {
 		}
 		
 		else if(scanner.getCurrent().type == LispScanner.EOS){
-			scanner.MoveToNext();
-			return parseExpr();
+			dd=scanner.MoveToNext();
+			return parseExpr(true);
 		}
 		
 		else if(scanner.getCurrent().type == LispScanner.CLOSING_PARENTHESIS)
-			throw new Exception("ERROR: unexpected closing paranthesis without opening paranthesis");
+			throw new Exception("> **error: unexpected closing paranthesis without opening paranthesis**");
 		else if(scanner.getCurrent().type == LispScanner.DOT)
-			throw new Exception("error: unexpected dot");
-		
+			throw new Exception("> **error: unexpected dot**");
+
+        if(firstcall && scanner.getCurrent().type!=LispScanner.EOF && scanner.getCurrent().type!=LispScanner.EOS) {
+            throw new Exception("> **error: $ or $$ expected**");
+        }
 		//returning the node
 		if(root!=null)
 			return root;
