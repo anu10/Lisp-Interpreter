@@ -13,7 +13,7 @@ class Token {
 
 class LispScanner {
 	private static Scanner scanner;
-	private static String inputLine = null;
+	 static String inputLine = null;
 	private static int pos = 0;
 	private Token current;
 	
@@ -41,8 +41,9 @@ class LispScanner {
 		return current;
 	}
 	
-	public void MoveToNext() throws Exception {
+	public boolean MoveToNext() throws Exception {
 		current = getNextToken(scanner);
+        return (current.type==EOF);
 	}
 
 	private static Token getNextToken(Scanner scanner) throws Exception{
@@ -67,8 +68,7 @@ class LispScanner {
 		if(inputLine.equals("$$"))
 			return new Token("$$",EOF);
 		if(inputLine.equals("$")){
-			if(scanner.hasNextLine())
-				inputLine = scanner.nextLine();
+			inputLine=null;
 			return new Token("$",EOS);
 		}
 		
@@ -114,7 +114,7 @@ class LispScanner {
 					if(!isError)
 						return new Token(inputLine.substring(startPos, firstSpaceIndex),NUMERIC_ATOM);
 					else
-						throw new Exception("ERROR: Invalid token wrong identifier");
+						throw new Exception("> **error: Invalid token wrong identifier**");
 						
 				}	
 			}
@@ -133,7 +133,7 @@ class LispScanner {
 						if(!isError)
 							return new Token(inputLine.substring(startPos, i),NUMERIC_ATOM);
 						else
-							throw new Exception("ERROR: Invalid token wrong identifier");							
+							throw new Exception("> **error: Invalid token wrong identifier**");							
 						   
 					}
 					
@@ -156,7 +156,7 @@ class LispScanner {
 						if(!isError)
 							return new Token(inputLine.substring(startPos, i),NUMERIC_ATOM);
 						else
-							throw new Exception("ERROR: Invalid token wrong identifier");
+							throw new Exception("**error: Invalid token wrong identifier**");
 							
 					}
 					
@@ -179,7 +179,7 @@ class LispScanner {
 						if(!isError)
 							return new Token(inputLine.substring(startPos, i),NUMERIC_ATOM);
 						else
-							throw new Exception("ERROR: Invalid token wrong identifier");
+							throw new Exception("> **error: Invalid token wrong identifier**");
 					}
 					
 					if(startsWithChar)
@@ -201,7 +201,7 @@ class LispScanner {
 						if(!isError)
 							return new Token(inputLine.substring(startPos, i),NUMERIC_ATOM);
 						else
-							throw new Exception("ERROR: Invalid token wrong identifier");
+							throw new Exception("> **error: Invalid token wrong identifier**");
 							
 					}
 					
@@ -246,7 +246,7 @@ class LispScanner {
 			if(!isError)
 				return new Token(inputLine.substring(startPos, i),NUMERIC_ATOM);
 			else
-				throw new Exception("ERROR: Invalid token wrong identifier");
+				throw new Exception("> **error: Invalid token wrong identifier**");
 		}
 		else
 			return new Token(inputLine.substring(startPos, i),LITERAL_ATOM);
